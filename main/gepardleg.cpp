@@ -10,38 +10,71 @@ GepardLeg::GepardLeg(Adafruit_PWMServoDriver *pwm, int ankle_num, int knee_num, 
   _pwm = pwm;
 }
 
-int GepardLeg::ankle(int angle) {
+int GepardLeg::getShoulder() { return _shoulder; };
+int GepardLeg::getKnee() { return _knee; };
+int GepardLeg::getAnkle() { return _ankle; };
 
-  angle = (angle < ANKLE_MIN_DEG ) ? ANKLE_MIN_DEG : angle;
-  angle = (angle > ANKLE_MAX_DEG ) ? ANKLE_MAX_DEG : angle;
-  
-  _ankle = angle;
-  _pwm->setPWM(_ankle_num, 0, angle2pw(angle));
+int GepardLeg::setShoulder(int angle) {
 
-  return angle;
-};
-
-int GepardLeg::knee(int angle) {
-  
-  angle = (angle < KNEE_MIN_DEG ) ? KNEE_MIN_DEG : angle;
-  angle = (angle > KNEE_MAX_DEG ) ? KNEE_MAX_DEG : angle;
-  
-  _knee = angle;
-  _pwm->setPWM(_knee_num, 0, angle2pw(angle));
-
-  return angle;
-};
-
-int GepardLeg::shoulder(int angle) {
-  
   angle = (angle < SHOULDER_MIN_DEG ) ? SHOULDER_MIN_DEG : angle;
   angle = (angle > SHOULDER_MAX_DEG ) ? SHOULDER_MAX_DEG : angle;
   
   _shoulder = angle;
-  _pwm->setPWM(_shoulder_num, 0, angle2pw(angle));
+  _pwm->setPWM(_shoulder_num, 0, angle2pw(angle + SHOULDER_SHIFT_DEG));
 
-  return angle;
+  setKnee(_knee);
+  return _shoulder;
 };
+
+int GepardLeg::setKnee(int angle) {
+  
+  _knee = angle;
+  
+  long int k = 180 - _knee + _shoulder; 
+  long int delta = 0;
+  
+  if (k < KNEE_MIN_DEG) {
+    delta = KNEE_MIN_DEG - k;  
+  }
+
+  if (k > KNEE_MAX_DEG) {
+    delta = KNEE_MAX_DEG - k;  
+  }
+  
+  k = k + delta;
+  _knee = _knee - delta;
+  
+  Serial.print("  Knee to: ");
+  Serial.print(angle);
+  Serial.print(",abs: ");
+  Serial.print(k);
+  Serial.print(" delta: ");
+  Serial.println(delta);
+  
+  _pwm->setPWM(_knee_num, 0, angle2pw(k + KNEE_SHIFT_DEG));
+  setAnkle(_ankle);
+
+  return _knee;
+};
+
+int GepardLeg::setAnkle(int angle) {
+
+  _ankle = angle;
+  long int a = 90 + _knee - _ankle;
+  
+  a = (a < ANKLE_MIN_DEG ) ? ANKLE_MIN_DEG : a;
+  a = (a > ANKLE_MAX_DEG ) ? ANKLE_MAX_DEG : a;
+
+  Serial.print("    Ankle to: ");
+  Serial.print(angle);
+  Serial.print(",abs: ");
+  Serial.println(a);
+
+  _pwm->setPWM(_ankle_num, 0, angle2pw(a));
+
+  return _ankle;
+};
+
 
 uint16_t GepardLeg::angle2pw(uint16_t angle){
   uint32_t pw = 0;
@@ -53,33 +86,23 @@ uint16_t GepardLeg::angle2pw(uint16_t angle){
 }
 
 void GepardLeg::shrug(){
-  bool cont = true;
-  
-  int a = _ankle;
-  int k = _knee;
-
-  while(cont) {
-    
-    a = ankle(++a);
-    k = knee(--k);
-    
-    if (a >= ANKLE_MAX_DEG && k <= KNEE_MIN_DEG) {
-      cont = false;
-    }
-  }
+  setAnkle(90);
+  setKnee(145);
+  setShoulder(0);
 }
 
 void GepardLeg::stretch(){
-  bool cont = true;
-  int a = _ankle;
-  int k = _knee;
+  setAnkle(90);
+  setKnee(90);
+  setShoulder(90);
+}
 
-  while(cont) {
-    ankle(--a);
-    knee(++k);
-
-    if (a <= ANKLE_MIN_DEG && k >= KNEE_MAX_DEG) {
-      cont = false;
-    }
-  }
+void GepardLeg::kick(){
+  setAnkle(90);
+  setShoulder(100);
+  setKnee(180);
+  delay(200);
+  setShoulder(30);
+  setKnee(0);
+  setAnkle(40);
 }

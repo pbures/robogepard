@@ -8,21 +8,29 @@
 #define ANKLE_MIN_DEG 0
 #define ANKLE_MAX_DEG 160
 
-#define KNEE_MIN_DEG 30
+#define KNEE_SHIFT_DEG -15
+#define KNEE_MIN_DEG 25
 #define KNEE_MAX_DEG 180
 
+#define SHOULDER_SHIFT_DEG 0
 #define SHOULDER_MIN_DEG 0
-#define SHOULDER_MAX_DEG 160
+#define SHOULDER_MAX_DEG 120
 
   class GepardLeg {
   public:
     GepardLeg(Adafruit_PWMServoDriver *pwm, int ankle_num, int knee_num, int shoulder_num);
-    int ankle(int angle);
-    int knee(int angle);
-    int shoulder(int angle);
+
+    int getAnkle();
+    int getKnee();
+    int getShoulder();
+    
+    int setAnkle(int angle);
+    int setKnee(int angle);
+    int setShoulder(int angle);
 
     void shrug();
     void stretch();
+    void kick();
     
     uint16_t angle2pw(uint16_t angle);
     

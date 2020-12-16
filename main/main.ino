@@ -22,9 +22,9 @@ int waitForEnter() {
   return incByte;
 }
 
-int ankleAng = ANKLE_MAX_DEG;
-int kneeAng = KNEE_MIN_DEG;
-int shoulderAng = 25;
+int shoulderAng = 90;
+int kneeAng = 90;
+int ankleAng = 90;
 
 void setup() {
   Serial.begin(9600);
@@ -35,19 +35,19 @@ void setup() {
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
 
   delay(10);
-  frontLeft.ankle(ankleAng);
-  frontLeft.knee(kneeAng);
-  frontLeft.shoulder(shoulderAng);
+  frontLeft.setShoulder(shoulderAng);
+  frontLeft.setKnee(kneeAng);  
+  frontLeft.setAnkle(ankleAng);
 }
 
 void loop() {
 
   Serial.print("Status: A:");
-  Serial.print(ankleAng);
+  Serial.print(frontLeft.getAnkle());
   Serial.print(" K:");
-  Serial.print(kneeAng);
+  Serial.print(frontLeft.getKnee());
   Serial.print(" S:");
-  Serial.print(shoulderAng);
+  Serial.print(frontLeft.getShoulder());
 
   int incomingByte = waitForEnter();
   Serial.print(" B: ");
@@ -55,33 +55,27 @@ void loop() {
   
   switch(incomingByte) {
     case 122: //'z'
-      ankleAng += DELTA;
-      ankleAng = frontLeft.ankle(ankleAng);
+      frontLeft.setAnkle(frontLeft.getAnkle()+DELTA);
       break;
       
     case 120: //'x'
-      ankleAng -= DELTA;
-      ankleAng = frontLeft.ankle(ankleAng);
+      frontLeft.setAnkle(frontLeft.getAnkle()-DELTA);
       break;
 
     case 115: //'s'
-      kneeAng += DELTA;
-      kneeAng = frontLeft.knee(kneeAng);
+      frontLeft.setKnee(frontLeft.getKnee()+DELTA);
       break;
 
     case 97: //'a'
-      kneeAng -= DELTA;
-      kneeAng = frontLeft.knee(kneeAng);
+      frontLeft.setKnee(frontLeft.getKnee()-DELTA);
       break;
 
     case 119: //'w'
-      shoulderAng += DELTA;
-      shoulderAng = frontLeft.shoulder(shoulderAng);
+      frontLeft.setShoulder(frontLeft.getShoulder()+DELTA);
       break;     
 
     case 113: //'q'
-      shoulderAng -= DELTA;
-      shoulderAng = frontLeft.shoulder(shoulderAng);
+      frontLeft.setShoulder(frontLeft.getShoulder()-DELTA);
       break;     
 
 
@@ -91,6 +85,10 @@ void loop() {
 
     case 100: //'d'
       frontLeft.stretch();
+      break;
+
+    case 118: //'v'
+      frontLeft.kick();
       break;
   }
 
