@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
+#define ANKLE_SHIFT_DEG 0
 #define ANKLE_MIN_DEG 0
 #define ANKLE_MAX_DEG 160
 
@@ -12,7 +13,7 @@
 #define KNEE_MIN_DEG 25
 #define KNEE_MAX_DEG 180
 
-#define SHOULDER_SHIFT_DEG 0
+#define SHOULDER_SHIFT_DEG -10
 #define SHOULDER_MIN_DEG 0
 #define SHOULDER_MAX_DEG 120
 
@@ -32,7 +33,7 @@
     void stretch();
     void kick();
     
-    uint16_t angle2pw(uint16_t angle);
+    uint16_t angle2pw(int16_t angle);
     
   private:
 

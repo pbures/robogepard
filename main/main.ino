@@ -89,6 +89,10 @@ void loop() {
 
     case 118: //'v'
       frontLeft.kick();
+      delay(600);
+      frontLeft.shrug();
+      delay(300);
+      frontLeft.stretch();
       break;
   }
 
