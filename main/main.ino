@@ -28,20 +28,23 @@ int ankleAng = 90;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("8 channel Servo test!");
 
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
   pwm.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
 
   delay(10);
+  Serial.println("---------");
+  
   frontLeft.setShoulder(shoulderAng);
   frontLeft.setKnee(kneeAng);  
   frontLeft.setAnkle(ankleAng);
+
+  frontLeft.update();
 }
 
 void loop() {
-
+//#ifdef _undef_
   Serial.print("Status: A:");
   Serial.print(frontLeft.getAnkle());
   Serial.print(" K:");
@@ -95,5 +98,9 @@ void loop() {
       frontLeft.stretch();
       break;
   }
+  
+  frontLeft.update();
+  
+//  #endif
 
 }

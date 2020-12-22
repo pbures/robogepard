@@ -5,6 +5,8 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
 
+#include "junction.h"
+
 #define ANKLE_SHIFT_DEG 0
 #define ANKLE_MIN_DEG 0
 #define ANKLE_MAX_DEG 160
@@ -21,6 +23,10 @@
   public:
     GepardLeg(Adafruit_PWMServoDriver *pwm, int ankle_num, int knee_num, int shoulder_num);
 
+    Junction *ankle;
+    Junction *knee;
+    Junction *shoulder;
+
     int getAnkle();
     int getKnee();
     int getShoulder();
@@ -29,11 +35,11 @@
     int setKnee(int angle);
     int setShoulder(int angle);
 
+    void update();
+
     void shrug();
     void stretch();
     void kick();
-    
-    uint16_t angle2pw(int16_t angle);
     
   private:
 
