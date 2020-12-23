@@ -27,7 +27,7 @@ int kneeAng = 90;
 int ankleAng = 90;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(57600);
 
   pwm.begin();
   pwm.setOscillatorFrequency(27000000);
@@ -41,6 +41,21 @@ void setup() {
   frontLeft.setAnkle(ankleAng);
 
   frontLeft.update();
+}
+
+void help() {
+  Serial.println("----------Help---------");
+  Serial.println("h    .. this help");
+  Serial.println("q, w .. shoulder decrease, increase angle");
+  Serial.println("a, s .. knee decrease, increase angle");
+  Serial.println("z, x .. ankle decrease, increase angle");
+  Serial.println("c .. shrug the leg");
+  Serial.println("d .. stretch the leg");
+  Serial.println("v .. kick by the leg");
+  Serial.println("1 .. front down position");
+  Serial.println("2 .. move from frontdown to backdown position");
+  Serial.println("3 .. move from backdown to frontdown position");
+  Serial.println("4 .. back down position");
 }
 
 void loop() {
@@ -57,6 +72,10 @@ void loop() {
   Serial.println(incomingByte);
   
   switch(incomingByte) {
+    case 104: //'h'
+      help();
+      break;
+      
     case 122: //'z'
       frontLeft.setAnkle(frontLeft.getAnkle()+DELTA);
       break;
@@ -96,6 +115,22 @@ void loop() {
       frontLeft.shrug();
       delay(300);
       frontLeft.stretch();
+      break;
+
+    case 49: //'1'
+      frontLeft.step1();
+      break;
+
+    case 50: //'2'
+      frontLeft.step2();
+      break;
+
+    case 51: //'3'
+      frontLeft.step3();
+      break;
+
+    case 52: //'4'
+      frontLeft.step4();
       break;
   }
   

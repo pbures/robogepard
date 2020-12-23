@@ -13,11 +13,11 @@
 
 #define KNEE_SHIFT_DEG -15
 #define KNEE_MIN_DEG 25
-#define KNEE_MAX_DEG 180
+#define KNEE_MAX_DEG 230
 
 #define SHOULDER_SHIFT_DEG -10
 #define SHOULDER_MIN_DEG 0
-#define SHOULDER_MAX_DEG 120
+#define SHOULDER_MAX_DEG 130
 
   class GepardLeg {
   public:
@@ -40,7 +40,11 @@
     void shrug();
     void stretch();
     void kick();
-    
+    void step1();
+    void step2();
+    void step3();
+    void step4();
+
   private:
 
     Adafruit_PWMServoDriver *_pwm;

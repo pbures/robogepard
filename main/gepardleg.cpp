@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <string.h>
 
+#include "legdegs.h"
+
 /*
  * --------######o######---------------
  *    |shoulder |||
@@ -51,13 +53,15 @@ int GepardLeg::setShoulder(int angle) {
   int a = shoulder->setAngle(angle);
 //  shoulder->update();
   setKnee(knee_deg);
-  
+
+  #ifdef DEBUG
   Serial.print("  Shoulder to: ");
   Serial.print(angle);
   
   Serial.print(",abs: ");
   Serial.println(a);
-
+  #endif
+  
   return getShoulder();
 };
 
@@ -66,17 +70,16 @@ int GepardLeg::setKnee(int angle) {
   int ankle = getAnkle();
   long int k = 180 - angle + getShoulder(); 
   long int k2 = knee->setAngle(k);
-//  int k3 = knee->update();
 
+  #ifdef DEBUG
   Serial.print("  Knee to: ");
   Serial.print(angle);
   Serial.print(",abs: ");
   Serial.print(k);
   Serial.print(" abs_limited: ");
   Serial.println(k2);
-//  Serial.print(" abs_lim_real: ");
-//  Serial.println(k3);
-
+  #endif
+ 
   setAnkle(ankle);
   return getKnee();
 };
@@ -86,17 +89,16 @@ int GepardLeg::setAnkle(int angle) {
   _ankle = angle;
   long int a = 90 + getKnee() - angle;
   long int a2 = ankle->setAngle(a);
-//  int a3 = ankle->update();
-  
+
+  #ifdef DEBUG  
   Serial.print("    Ankle to: ");
   Serial.print(angle);
   Serial.print(",abs: ");
   Serial.print(a);
   Serial.print(" abs_limited: ");
   Serial.println(a2);
-//  Serial.print(" abs_lim_real: ");
-//  Serial.println(a3);
-
+  #endif
+  
   return getAnkle();
 };
 
@@ -125,3 +127,50 @@ void GepardLeg::kick(){
   setAnkle(90);
   update();
 }
+
+void GepardLeg::step1(){
+  setAnkle(90);
+  setKnee(legDegs[0][0]);
+  setShoulder(legDegs[0][1]);
+  update();
+};
+
+void GepardLeg::step2(){
+  setAnkle(90);
+  for(int j=3; j>=0; j--){
+    for(int i=0; i< legDegsLen; i++){
+      setKnee(legDegs[i][0]);
+      setShoulder(legDegs[i][1]);
+      delay(2);
+      update();
+    }
+
+    delay(500);
+    setKnee(180); update();
+    delay(500);
+    setShoulder(legDegs[0][1]-20); update();
+    delay(200);
+    setKnee(legDegs[0][0]); update();
+    delay(200);
+    setShoulder(legDegs[0][1]);
+    update();
+    delay(500);
+  }
+
+};
+
+void GepardLeg::step3(){
+  setAnkle(90);
+  for(int i=legDegsLen-1; i>=0; i--){
+    setKnee(legDegs[i][0]);
+    setShoulder(legDegs[i][1]);
+    update();
+  }
+};
+
+void GepardLeg::step4(){
+  setAnkle(90);
+  setKnee(legDegs[legDegsLen-1][0]);
+  setShoulder(legDegs[legDegsLen-1][1]);
+  update();
+};
